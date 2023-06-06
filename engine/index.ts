@@ -32,6 +32,7 @@ enum Option {
     HELP,
     MANUAL,
     LUCKY_DIP,
+    QUICK_RUN,
     START,
     RESET,
     QUIT,
@@ -41,6 +42,7 @@ const OptionKeys: Map<string, Option> = new Map([
     ["help", Option.HELP],
     ["manual", Option.MANUAL],
     ["lucky dip", Option.LUCKY_DIP],
+    ["quick run", Option.QUICK_RUN],
     ["start", Option.START],
     ["reset", Option.RESET],
     ["quit", Option.QUIT]
@@ -76,6 +78,7 @@ function resetGame(input: string, gameData: GameData) {
 const OPTION_HANDLERS: Map<Option, (input: string, gameData: GameData) => void> = new Map([
     [Option.MANUAL, handleManual],
     [Option.LUCKY_DIP, handleLuckyDip],
+    [Option.QUICK_RUN, handleQuickRun],
     [Option.QUIT, quitGame],
     [Option.START, handleStart],
     [Option.RESET, resetGame]
@@ -123,7 +126,7 @@ function handleManual(input: string, gameData: GameData): void {
     }
 }
 
-function handleQuickPlay(input: string, gameData: GameData): void {
+function handleQuickRun(input: string, gameData: GameData): void {
     const numRuns = parseInt(prompter("How many runs: "));
     const outputFile = prompter("Output filename: ");
     let result = rtpTest(numRuns);
