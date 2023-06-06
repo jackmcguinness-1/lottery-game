@@ -36,6 +36,7 @@ enum Option {
     START,
     RESET,
     QUIT,
+    DUMP,
     NONE,
 };
 const OptionKeys: Map<string, Option> = new Map([
@@ -45,7 +46,8 @@ const OptionKeys: Map<string, Option> = new Map([
     ["quick run", Option.QUICK_RUN],
     ["start", Option.START],
     ["reset", Option.RESET],
-    ["quit", Option.QUIT]
+    ["quit", Option.QUIT],
+    ["dump", Option.DUMP]
 ]);
 
 class GameData {
@@ -64,7 +66,6 @@ enum GameState {
     IDLE,
     MANUAL_SELECTED,
     LUCKY_DIP_SELECTED,
-    PLAYING,
     QUITTING
 }
 
@@ -81,7 +82,8 @@ const OPTION_HANDLERS: Map<Option, (input: string, gameData: GameData) => void> 
     [Option.QUICK_RUN, handleQuickRun],
     [Option.QUIT, quitGame],
     [Option.START, handleStart],
-    [Option.RESET, resetGame]
+    [Option.RESET, resetGame],
+    [Option.DUMP, (_, gameData) => {console.log(gameData)}]
 ]);
 
 
@@ -104,7 +106,7 @@ function handleInput(input: string, gameData: GameData) {
     }
 }
 
-function quitGame(input: string, gameData: GameData) {
+function quitGame(_: string, gameData: GameData) {
     gameData.state = GameState.QUITTING;
 }
 
@@ -114,7 +116,7 @@ function checkNumbersValid(numbers: number[]) {
     return correctAmount && allInRange;
 }
 
-function handleManual(input: string, gameData: GameData): void {
+function handleManual(_: string, gameData: GameData): void {
     const numbersStr = prompter(Message.NUMBERS_PROMPT);
     const playerNumbers = numbersStr.split(" ").map(num => parseInt(num));
     let valid = checkNumbersValid(playerNumbers);
@@ -123,22 +125,24 @@ function handleManual(input: string, gameData: GameData): void {
     } else {
         console.log(`setting numbers to ${playerNumbers}`);
         gameData.playerNumbers = playerNumbers;
+        gameData.state = GameState.MANUAL_SELECTED;
     }
 }
 
-function handleQuickRun(input: string, gameData: GameData): void {
+function handleQuickRun(_: string, gameData: GameData): void {
     const numRuns = parseInt(prompter("How many runs: "));
     const outputFile = prompter("Output filename: ");
     let result = rtpTest(numRuns);
     fs.writeFileSync(outputFile, JSON.stringify(result, null, "\t"), {}); 
 }
 
-function handleLuckyDip(input: string, gameData: GameData): void {
+function handleLuckyDip(_: string, gameData: GameData): void {
     gameData.playerNumbers = pickRandomNumbers(BALL_LOW, BALL_HIGH + 1, NUM_BALLS);
+    gameData.state = GameState.LUCKY_DIP_SELECTED;
     console.log(`randomly picked ${gameData.playerNumbers}`);
 }
 
-function handleStart(input: string, gameData: GameData): void {
+function handleStart(_: string, gameData: GameData): void {
     if(gameData.playerNumbers !== null) {
         const result = play(gameData.playerNumbers);
         console.log("your result is: ");
@@ -148,7 +152,7 @@ function handleStart(input: string, gameData: GameData): void {
     }
 }
 
-function handleHelp(input: string, gameData: GameData): void {
+function handleHelp(input: string, _: GameData): void {
     let helpWords = input.split(" ");
     helpWords.shift();
     let helpOption = helpWords.join(" ");
