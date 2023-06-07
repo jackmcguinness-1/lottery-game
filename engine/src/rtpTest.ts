@@ -16,6 +16,7 @@ export function rtpTest(numRuns: number): StatsMeters {
         totalMeters.meterResult(result);
     }
 
+    totalMeters.calcRtp();
     console.log("100% complete");
 
     return totalMeters;

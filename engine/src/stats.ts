@@ -5,11 +5,13 @@ export class StatsMeters {
     CASH_OUT: number
     CNT_OAK: number[]
     WIN_OAK: number[]
+    RTP: number
     constructor() {
         this.CASH_IN = 0;
         this.CASH_OUT = 0;
         this.CNT_OAK = new Array(59).fill(0);
         this.WIN_OAK = new Array(59).fill(0);
+        this.RTP = 0;
     }
 
     meterResult(winResult: WinResult) {
@@ -17,5 +19,9 @@ export class StatsMeters {
         this.CASH_OUT += winResult.payout;
         this.CNT_OAK[winResult.matchingNumbers.length] += 1;
         this.WIN_OAK[winResult.matchingNumbers.length] += winResult.payout;
+    }
+
+    calcRtp() {
+        this.RTP = this.CASH_OUT / this.CASH_IN * 100;
     }
 }
